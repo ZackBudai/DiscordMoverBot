@@ -56,6 +56,7 @@ class DiscordMoverBot(discord.Client):
         for guild in self.guilds:
             member = guild.get_member(self.target_member_id)
             if member is not None:
+                logger.info("Checking initial voice state for target member %s in guild %s", member.id, guild.id)
                 await self._move_if_needed(member)
 
     async def on_voice_state_update(
