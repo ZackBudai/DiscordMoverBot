@@ -23,7 +23,7 @@ class DiscordMoverBot(discord.Client):
         self.target_channel_id = target_channel_id
 
     async def _move_if_needed(self, member: discord.Member) -> None:
-        if member.id != self.target_member_id or member.voice is None or member.voice.channel is None:
+        if member.voice is None or member.voice.channel is None:
             return
 
         target_channel = member.guild.get_channel(self.target_channel_id)
@@ -35,7 +35,7 @@ class DiscordMoverBot(discord.Client):
         if member.voice.channel.id == target_channel.id:
             return
 
-        await member.move_to(target_channel, reason="DiscordMoverBot auto-move target member")
+        await member.move_to(target_channel, reason="Auto-moved by DiscordMoverBot to configured channel")
 
     async def on_ready(self) -> None:
         for guild in self.guilds:
