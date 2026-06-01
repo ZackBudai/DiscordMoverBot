@@ -50,7 +50,12 @@ class DiscordMoverBot(discord.Client):
                 reason="Auto-moved by DiscordMoverBot to configured channel",
             )
         except (discord.Forbidden, discord.HTTPException) as exc:
-            logger.warning("Failed to move target member: %s", exc)
+            logger.warning(
+                "Failed to move member %s to channel %s: %s",
+                member.id,
+                self.target_channel_id,
+                exc,
+            )
 
     async def on_ready(self) -> None:
         for guild in self.guilds:
