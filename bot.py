@@ -34,6 +34,11 @@ class DiscordMoverBot(discord.Client):
         if target_channel is None or not isinstance(
             target_channel, (discord.VoiceChannel, discord.StageChannel)
         ):
+            logger.warning(
+                "Target channel %s not found or not voice/stage in guild %s",
+                self.target_channel_id,
+                member.guild.id,
+            )
             return
 
         if member.voice.channel.id == target_channel.id:
@@ -65,6 +70,8 @@ class DiscordMoverBot(discord.Client):
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.INFO)
+
     token = os.getenv("DISCORD_TOKEN")
     if not token:
         raise SystemExit("Missing required environment variable: DISCORD_TOKEN")
