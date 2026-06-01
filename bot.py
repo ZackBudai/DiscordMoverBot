@@ -1,9 +1,13 @@
 import os
+import logging
 
 import discord
 
 
-def _required_int(name: str) -> int:
+logger = logging.getLogger(__name__)
+
+
+def get_required_int_env(name: str) -> int:
     value = os.getenv(name)
     if value is None:
         raise SystemExit(f"Missing required environment variable: {name}")
@@ -35,7 +39,13 @@ class DiscordMoverBot(discord.Client):
         if member.voice.channel.id == target_channel.id:
             return
 
-        await member.move_to(target_channel, reason="Auto-moved by DiscordMoverBot to configured channel")
+        try:
+            await member.move_to(
+                target_channel,
+                reason="Auto-moved by DiscordMoverBot to configured channel",
+            )
+        except (discord.Forbidden, discord.HTTPException) as exc:
+            logger.warning("Failed to move target member: %s", exc)
 
     async def on_ready(self) -> None:
         for guild in self.guilds:
@@ -60,8 +70,8 @@ def main() -> None:
         raise SystemExit("Missing required environment variable: DISCORD_TOKEN")
 
     bot = DiscordMoverBot(
-        target_member_id=_required_int("TARGET_MEMBER_ID"),
-        target_channel_id=_required_int("TARGET_CHANNEL_ID"),
+        target_member_id=get_required_int_env("TARGET_MEMBER_ID"),
+        target_channel_id=get_required_int_env("TARGET_CHANNEL_ID"),
     )
     bot.run(token)
 
